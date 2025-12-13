@@ -28,63 +28,33 @@ fn part1(input: &str) -> i32 {
         }).1
 }
 
-enum Limit {
-    Min(i32),
-    Max(i32),
-}
-
-struct Action {
-    pub inc: i32,
-    pub clicks: i32,
-    pub limit: Limit,
-    pub reset: i32,
-}
-
 fn part2(input: &str) -> i32 {
     input
         .lines()
         .fold((50, 0), |acc, line| {
-            let action: Action = match line.split_at(1) {
-                ("L", val) => { 
-                    Action {
-                        inc: -1, 
-                        clicks: val.parse().expect("Invalid number for L"),
-                        limit: Limit::Min(0),
-                        reset: 99,
-                    }
-                },
-                ("R", val) => { 
-                    Action {
-                        inc: 1, 
-                        clicks: val.parse().expect("Invalid number for R"),
-                        limit: Limit::Max(99),
-                        reset: 0,
-                    }
-                }
-                _ => panic!("Invalid input when splitting line"),
+            let parts = line.split_at(1);
+            let inc = match parts.0 {
+                "L" => -1,
+                "R" => 1,
+                _ => panic!("Invalid direction. Must be L or R"),
             };
+            let clicks = parts.1.parse().expect("Invalid number = {parts.1}");
 
             let mut sum = acc.0;
             let mut zero_intercepts = acc.1;
 
-            for click in 0..action.clicks {
-                sum += action.inc;
+            for click in 0..clicks {
+                sum += inc;
                 if sum == 0 {
                     zero_intercepts += 1;
                 }
-                match action.limit {
-                    Limit::Max(val) => {
-                        if sum > val {
-                            zero_intercepts += 1;
-                            sum = action.reset;
-                        }
-                    }
-                    Limit::Min(val) => {
-                        if sum < val {
-                            sum = action.reset;
-                        }
-                    }
-                };
+                if sum > 99 {
+                    zero_intercepts += 1;
+                    sum = 0;
+                }
+                if sum < 0 {
+                    sum = 99;
+                }
             }
             (sum, zero_intercepts)
         }).1
@@ -125,4 +95,17 @@ mod tests {
         let result = part2(test_input);
         assert_eq!(result , 6);
     }
+
+    #[test]
+    fn full_part_1() {
+        let puzzle_input = fs::read_to_string("part1.input").expect("Failed to open part1 input");
+        let result = part1(puzzle_input.as_str());
+        assert_eq!(result, 1100);
+    }
 }
+    #[test]
+    fn full_part_2() {
+        let puzzle_input = fs::read_to_string("part1.input").expect("Failed to open part1 input");
+        let result = part2(puzzle_input.as_str());
+        assert_eq!(result, 6358);
+    }
