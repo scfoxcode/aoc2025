@@ -93,7 +93,7 @@ fn main() {
     let part_1_answer = part1(puzzle_input.as_str());
     println!("Part 1 = {part_1_answer}");
     let part_2_answer = part2(puzzle_input.as_str());
-    println!("Part 2 = {part_2_answer}"); // 6358 for my input :D
+    println!("Part 2 = {part_2_answer}");
 }
 
 #[cfg(test)]
@@ -129,5 +129,10 @@ mod tests {
 }
     #[test]
     fn full_part_2() {
-        assert_eq!(true, false);
+        let puzzle_input = {
+            let input = fs::read_to_string("part1.input").expect("Failed to open part1 input");
+            input.trim().to_string()
+        };
+        let result = part2(puzzle_input.as_str());
+        assert_eq!(result, 48_631_958_998);
     }
